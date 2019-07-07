@@ -5,4 +5,5 @@
 *.terraform.tfstate.backup	
 
 # Module directory
-.terraform/
+.terraform
+*.terraform
