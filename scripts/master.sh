@@ -8,7 +8,7 @@ set -o pipefail
 
 
 export KUBEADM_TOKEN=${kubeadm_token}
-export IP_ADDRESS=$(ifconfig -a eth0 | grep -e "inet addr" | awk -F":" '{print $2}' | awk -F" " '{print $1}')
+export IP_ADDRESS=$(ifconfig -a eth0 | grep -e "inet " | awk -F":" '{print $2}' | awk -F" " '{print $1}')
 export KUBERNETES_VERSION="1.15.0"
 
 # Set this only after setting the defaults
@@ -19,6 +19,8 @@ FULL_HOSTNAME="$(curl -s http://169.254.169.254/latest/meta-data/hostname)"
 
 # Make DNS lowercase
 ##DNS_NAME=$(echo "$DNS_NAME" | tr 'A-Z' 'a-z')
+
+apt-get update -y && apt-get upgrade -y
 
 curl -fsSL https://get.docker.com | bash
 
@@ -31,6 +33,16 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update && apt-get install -y kubelet kubeadm kubectl
+
+
+cat > /etc/modules-load.d/k8s.conf <<EOF
+br_netfilter
+ip_vs_rr
+ip_vs_wrr
+ip_vs_sh
+nf_conntrack_ipv4
+ip_vs
+EOF
 
 # Fix kubelet configuration
 cat > /etc/docker/daemon.json <<EOF
@@ -55,6 +67,7 @@ systemctl restart docker
 sysctl net.bridge.bridge-nf-call-iptables=1
 sysctl net.bridge.bridge-nf-call-ip6tables=1
 
+# Initialize the master
 # Initialize the master
 cat >/tmp/kubeadm.yaml <<EOF
 ---
@@ -94,7 +107,6 @@ networking:
   dnsDomain: cluster.local
   podSubnet: ""
   serviceSubnet: 10.96.0.0/12
-
 EOF
 
 kubeadm reset --force

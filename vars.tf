@@ -13,9 +13,12 @@ variable "ami" {
   default     = "ami-0be3df9b8bb0a5f23"
 }
 
-variable "vpc_security_group_ids"{
-  default    = ["sg-017f224a4b08c2d14"]
+variable "cluster_name" {
+    default = "ledivan-kubernetes"
+}
 
+variable "master_subnet_id" {
+    default = "subnet-3a84ff5d"
 }
 
 variable "key" {
