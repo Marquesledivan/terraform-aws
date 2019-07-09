@@ -62,17 +62,6 @@ resource "aws_security_group_rule" "allow_cluster_crosstalk" {
     security_group_id = "${aws_security_group.kubernetes.id}"
 }
 
-# Allow API connections only from specific CIDR (TODO)
-resource "aws_security_group_rule" "allow_api_from_cidr" {
-    type = "ingress"
-    from_port = 6443
-    to_port = 6443
-    protocol = "tcp"
-    source_security_group_id = "${aws_security_group.kubernetes.id}"
-    security_group_id = "${aws_security_group.kubernetes.id}"
-}
-
-
 resource "aws_eip_association" "master_assoc" {
   instance_id   = "${aws_instance.master.id}"
   allocation_id = "${aws_eip.master.id}"
