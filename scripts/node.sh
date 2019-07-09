@@ -13,11 +13,7 @@ export KUBERNETES_VERSION="1.15.0"
 # Set this only after setting the defaults
 set -o nounset
 
-# We to match the hostname expected by kubeadm an the hostname used by kubelet
-FULL_HOSTNAME="$(curl -s http://169.254.169.254/latest/meta-data/hostname)"
-
-# Make DNS lowercase
-##DNS_NAME=$(echo "$DNS_NAME" | tr 'A-Z' 'a-z')
+# Installation kernel kubectl kubelet and kubeabm and update on the operating system
 
 curl -fsSL https://get.docker.com | bash
 
@@ -28,6 +24,20 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update && apt-get install -y kubelet kubeadm kubectl
+
+
+#Enabling systemd support
+
+sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+cat > /etc/modules-load.d/k8s.conf <<EOF
+br_netfilter
+ip_vs_rr
+ip_vs_wrr
+ip_vs_sh
+nf_conntrack_ipv4
+ip_vs
+EOF
 
 # Setup daemon.
 cat > /etc/docker/daemon.json <<EOF
@@ -46,6 +56,7 @@ mkdir -p /etc/systemd/system/docker.service.d
 # Restart docker.
 systemctl daemon-reload
 systemctl restart docker
+systemctl restart kubelet
 
 
 # Set settings needed by Docker
