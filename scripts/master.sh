@@ -14,7 +14,11 @@ export KUBERNETES_VERSION="1.15.0"
 # Set this only after setting the defaults
 set -o nounset
 
-# Installation kernel kubectl kubelet and kubeabm and update on the operating system
+# We needed to match the hostname expected by kubeadm an the hostname used by kubelet
+FULL_HOSTNAME="$(curl -s http://169.254.169.254/latest/meta-data/hostname)"
+
+# Make DNS lowercase
+##DNS_NAME=$(echo "$DNS_NAME" | tr 'A-Z' 'a-z')
 
 apt-get update -y && apt-get upgrade -y
 
@@ -29,8 +33,6 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update && apt-get install -y kubelet kubeadm kubectl
-
-#Enabling systemd support
 
 sed -i "s/cgroup-driver=systemd/cgroup-driver=cgroupfs/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
