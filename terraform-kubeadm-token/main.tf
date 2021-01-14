@@ -13,14 +13,14 @@ resource "random_shuffle" "token2" {
 }
 
 data "template_file" "kubeadm_token" {
-  template = "${file("${path.module}/templates/token.tpl")}"
+  template = file("${path.module}/templates/token.tpl")
 
-  vars {
-    token1 = "${join("", random_shuffle.token1.result)}"
-    token2 = "${join("", random_shuffle.token2.result)}"
+  vars = {
+    token1 = join("", random_shuffle.token1.result)
+    token2 = join("", random_shuffle.token2.result)
   }
 
-  depends_on = ["random_shuffle.token1", "random_shuffle.token1"]
+  depends_on = [random_shuffle.token1, random_shuffle.token1]
 }
 
 

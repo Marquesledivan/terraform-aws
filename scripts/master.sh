@@ -300,3 +300,16 @@ cp /root/kubeconfig_ip /root/kubeconfig
 sed -i "s/server: https:\/\/$IP_ADDRESS:6443/server: https:\/\/$IP_ADDRESS:6443/g" /root/kubeconfig
 chown $(id -u):$(id -g) /root/kubeconfig
 chmod 0600 /root/kubeconfig
+
+## Quick Start Evaluation Install
+#curl -L https://git.io/getLatestIstio | ISTIO_VERSION=1.2.2 sh -
+
+#cp istio-1.2.2/bin/* /bin/
+
+#for i in /istio-1.2.2/install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl apply -f $i; done
+
+#kubectl apply -f /istio-1.2.2/install/kubernetes/istio-demo.yaml
+
+#kubectl label namespace default istio-injection=enabled
+
+#kubectl apply -f /istio-1.2.2/samples/bookinfo/platform/kube/bookinfo.yaml
