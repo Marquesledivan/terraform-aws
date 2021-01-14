@@ -7,3 +7,4 @@
 # Module directory
 .terraform
 *.terraform
+*.terraform.lock.hcl

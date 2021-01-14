@@ -2,6 +2,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
+terraform {
+  required_version  = ">=0.12.3, <=0.14.4"
+}
+
 variable "instance_type" {
   type        = string
   description = "Tipo de instância a ser utilizado"
